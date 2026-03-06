@@ -1,0 +1,71 @@
+CREATE DATABASE IF NOT EXISTS lopushok_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE lopushok_db;
+
+CREATE TABLE Role (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    Title VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE User (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    Login VARCHAR(100) NOT NULL,
+    Password VARCHAR(100) NOT NULL,
+    RoleID INT NOT NULL,
+    FOREIGN KEY (RoleID) REFERENCES Role(ID)
+);
+
+CREATE TABLE ProductType (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    Title VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE Product (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    Title VARCHAR(100) NOT NULL,
+    ProductTypeID INT NOT NULL,
+    ArticleNumber VARCHAR(50) NOT NULL,
+    Description TEXT,
+    Image VARCHAR(255),
+    ProductionPersonCount INT,
+    ProductionWorkshopNumber INT,
+    MinCostForAgent DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (ProductTypeID) REFERENCES ProductType(ID)
+);
+
+CREATE TABLE Material (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    Title VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE ProductMaterial (
+    ProductID INT NOT NULL,
+    MaterialID INT NOT NULL,
+    Count FLOAT NOT NULL,
+    PRIMARY KEY(ProductID, MaterialID),
+    FOREIGN KEY (ProductID) REFERENCES Product(ID) ON DELETE CASCADE,
+    FOREIGN KEY (MaterialID) REFERENCES Material(ID) ON DELETE CASCADE
+);
+
+INSERT INTO Role (Title) VALUES ('Администратор'), ('Менеджер'), ('Агент');
+
+INSERT INTO User (Login, Password, RoleID) VALUES 
+('admin', 'admin', 1),
+('manager', 'manager', 2),
+('agent', 'agent', 3);
+
+INSERT INTO ProductType (Title) VALUES ('Бумага 2 слоя'), ('Бумага 3 слоя'), ('Салфетки');
+
+-- поменять пути
+INSERT INTO Product (Title, ProductTypeID, ArticleNumber, Image, MinCostForAgent) VALUES 
+('Мягкая бумага', 1, '112233', 'products/paper_1.jpeg', 150.50),
+('Супер мягкая бумага', 2, '223344', 'products/paper_2.jpeg', 250.00),
+('Салфетки белые', 3, '334455', 'products/paper_3.jpeg', 50.00),
+('Салфетки цветные', 3, '445566', 'products/paper_4.jpeg', 65.00),
+('Бумага эконом', 1, '556677', 'products/paper_5.jpeg', 120.00);
+
+INSERT INTO Material (Title) VALUES ('Целлюлоза'), ('Краситель зеленый'), ('Ароматизатор "Лес"');
+
+INSERT INTO ProductMaterial (ProductID, MaterialID, Count) VALUES 
+(1, 1, 2.5),
+(2, 1, 3.5), (2, 3, 0.1),
+(3, 1, 1.0), (4, 1, 1.0), (4, 2, 0.05);
